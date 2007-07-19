@@ -44,9 +44,9 @@
 Summary: The Berkeley DB database library for C
 Name: db42
 Version: 4.2.52
-Release: %mkrel 12
-Source: http://www.sleepycat.com/update/%{version}/db-%{version}.tar.bz2
-URL: http://www.sleepycat.com
+Release: %mkrel 13
+Source: http://download.oracle.com/berkeley-db/db-%{version}.tar.bz2
+URL: http://www.oracle.com/technology/software/products/berkeley-db/db/
 License: BSD
 Group: System/Libraries
 BuildRequires: tcl, db1-devel,ed
@@ -60,6 +60,7 @@ BuildRequires: gcj-tools
 BuildRequires: sharutils
 %endif
 
+#Upstream patches from http://www.oracle.com/technology/products/berkeley-db/db/update/4.2.52/patch.4.2.52.html
 Patch0: http://www.sleepycat.com/update/4.2.52/patch.4.2.52.1
 Patch1: http://www.sleepycat.com/update/4.2.52/patch.4.2.52.2
 
@@ -78,6 +79,8 @@ Patch7:	http://www.sleepycat.com/update/4.2.52/patch.4.2.52.4
 Patch8: BerkeleyDB42.patch
 
 Patch9:	db-4.2.52-no-jni-includes.patch
+Patch10: http://www.oracle.com/technology/products/berkeley-db/db/update/4.2.52/patch.4.2.52.5
+Patch11: http://www.stanford.edu/services/directory/openldap/configuration/patches/db/4252-region-fix.diff
 
 BuildRoot: %{_tmppath}/%{name}-root
 
@@ -266,6 +269,9 @@ modules which use Berkeley DB.
 %patch8 -b .txn_nolog
 
 %patch9 -p1 -b .no-jni-includes
+
+%patch10
+%patch11 -p1
 
 # Remove tags files which we don't need.
 find . -name tags | xargs rm -f
