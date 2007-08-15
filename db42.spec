@@ -122,7 +122,6 @@ Group: Development/Java
 Requires(post): java-gcj-compat
 Requires(postun):  java-gcj-compat
 %endif
-Provides: libdbjava = %{version}-%{release}
 
 %description -n %{libdbjava}
 The Berkeley Database (Berkeley DB) is a programmatic toolkit that provides
@@ -323,7 +322,7 @@ chmod -R u+w dist
 (cd dist && ./s_config)
 
 %build
-CFLAGS="$RPM_OPT_FLAGS -O1"
+CFLAGS="-O1"
 %ifarch ppc
 CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT"
 %endif
