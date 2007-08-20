@@ -90,8 +90,8 @@ should be installed on all systems.
 %package -n %{libname}
 Summary: The Berkeley DB database library for C
 Group: System/Libraries
-Requires(post): /sbin/ldconfig
-Requires(postun): /sbin/ldconfig
+Requires(post): ldconfig
+Requires(postun): ldconfig
 
 %description -n %{libname}
 The Berkeley Database (Berkeley DB) is a programmatic toolkit that provides
@@ -102,8 +102,8 @@ should be installed on all systems.
 %package -n %{libdbcxx}
 Summary: The Berkeley DB database library for C++
 Group: System/Libraries
-Requires(post): /sbin/ldconfig
-Requires(postun): /sbin/ldconfig
+Requires(post): ldconfig
+Requires(postun): ldconfig
 Provides: libdbcxx = %{version}-%{release}
 
 %description -n %{libdbcxx}
@@ -142,8 +142,8 @@ Javadoc for %{name}.
 %package -n %{libdbtcl}
 Summary: The Berkeley DB database library for TCL
 Group: System/Libraries
-Requires(post): /sbin/ldconfig
-Requires(postun): /sbin/ldconfig
+Requires(post): ldconfig
+Requires(postun): ldconfig
 Provides: libdbtcl = %{version}-%{release}
 
 %description -n %{libdbtcl}
@@ -224,8 +224,8 @@ use Berkeley DB.
 %package -n %{libdbnss}
 Summary: The Berkeley DB database library for NSS modules
 Group: System/Libraries
-Requires(post): /sbin/ldconfig
-Requires(postun): /sbin/ldconfig
+Requires(post): ldconfig
+Requires(postun): ldconfig
 
 %description -n %{libdbnss}
 The Berkeley Database (Berkeley DB) is a programmatic toolkit that provides
