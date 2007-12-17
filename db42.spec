@@ -79,7 +79,6 @@ Patch9:	db-4.2.52-no-jni-includes.patch
 Patch10: http://www.oracle.com/technology/products/berkeley-db/db/update/4.2.52/patch.4.2.52.5
 Patch11: http://www.stanford.edu/services/directory/openldap/configuration/patches/db/4252-region-fix.diff
 
-BuildRoot: %{_tmppath}/%{name}-root
 
 %description
 The Berkeley Database (Berkeley DB) is a programmatic toolkit that provides
