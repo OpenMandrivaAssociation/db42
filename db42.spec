@@ -35,7 +35,7 @@
 Summary: The Berkeley DB database library for C
 Name: db42
 Version: 4.2.52
-Release: %mkrel 15
+Release: %mkrel 16
 Source: http://download.oracle.com/berkeley-db/db-%{version}.tar.bz2
 URL: http://www.oracle.com/technology/software/products/berkeley-db/db/
 License: BSD
@@ -170,11 +170,7 @@ Group: Development/Databases
 Requires: %{libname} = %{version}-%{release}
 Requires: %{libdbtcl} = %{version}-%{release}
 Requires: %{libdbcxx} = %{version}-%{release}
-Provides: db-devel = %{version}-%{release}
-Provides: db4-devel = %{version}-%{release}
 Provides: db4.2-devel = %{version}-%{release}
-Provides: libdb-devel = %{version}-%{release}
-Provides: %{_lib}db-devel = %{version}-%{release}
 Provides: libdb4.2-devel = %{version}-%{release}
 Conflicts: %{libname_orig}3.3-devel, %{libname_orig}4.0-devel
 Conflicts: %{libname_orig}4.1-devel
@@ -195,10 +191,7 @@ building programs which use Berkeley DB.
 Summary: Development static libraries files for the Berkeley DB library
 Group: Development/Databases
 Requires: db4.2-devel = %{version}-%{release}
-Provides: db-static-devel = %{version}-%{release}
-Provides: db4-static-devel = %{version}-%{release}
 Provides: db4.2-static-devel = %{version}-%{release}
-Provides: libdb-static-devel = %{version}-%{release}
 Provides: libdb4.2-static-devel = %{version}-%{release}
 Conflicts: %{libname_orig}3.3-static-devel, %{libname_orig}4.0-static-devel
 Conflicts: %{libname_orig}4.1-static-devel
