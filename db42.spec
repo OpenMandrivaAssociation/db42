@@ -47,6 +47,7 @@ BuildRequires: glibc-static-devel
 %endif
 %if %with java
 BuildRequires:  java-rpmbuild
+BuildRequires:  libgcj-devel
 BuildRequires:  sharutils
 %if %{gcj_support}
 BuildRequires: java-gcj-compat-devel
@@ -322,6 +323,7 @@ export JAR=%{jar}
 export JAVA=%{java}
 export JAVACFLAGS="-nowarn"
 JAVA_MAKE="JAR=%{jar} JAVAC=%{javac} JAVACFLAGS="-nowarn" JAVA=%{java}"
+#export CPPFLAGS="-I%{java_home}/include"
 %endif
 CONFIGURE_TOP="../dist" %configure2_5x \
 	--enable-compat185 --enable-dump185 \
@@ -344,7 +346,7 @@ popd
 %if %{build_nss}
 mkdir build_nss
 pushd build_nss
-CONFIGURE_TOP="../dist" %configure2_5x \
+CONFIGURE_TOP="../dist" %{configure2_5x} \
 	--enable-shared --disable-static \
 	--disable-tcl --disable-cxx --disable-java \
 	--disable-pthreadsmutexes \
