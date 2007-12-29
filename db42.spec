@@ -35,7 +35,7 @@
 Summary: The Berkeley DB database library for C
 Name: db42
 Version: 4.2.52
-Release: %mkrel 16
+Release: %mkrel 17
 Source: http://download.oracle.com/berkeley-db/db-%{version}.tar.bz2
 URL: http://www.oracle.com/technology/software/products/berkeley-db/db/
 License: BSD
@@ -74,7 +74,6 @@ Patch7:	http://www.sleepycat.com/update/4.2.52/patch.4.2.52.4
 # to be disabled for operations that specify it (TXN_NOLOG)
 Patch8: BerkeleyDB42.patch
 
-Patch9:	db-4.2.52-no-jni-includes.patch
 Patch10: http://www.oracle.com/technology/products/berkeley-db/db/update/4.2.52/patch.4.2.52.5
 Patch11: http://www.stanford.edu/services/directory/openldap/configuration/patches/db/4252-region-fix.diff
 
@@ -258,8 +257,6 @@ modules which use Berkeley DB.
 
 %patch8 -b .txn_nolog
 
-%patch9 -p1 -b .no-jni-includes
-
 %patch10
 %patch11 -p1
 
@@ -324,7 +321,6 @@ export JAR=%{jar}
 export JAVA=%{java}
 export JAVACFLAGS="-nowarn"
 JAVA_MAKE="JAR=%{jar} JAVAC=%{javac} JAVACFLAGS="-nowarn" JAVA=%{java}"
-#export CPPFLAGS="-I%{java_home}/include"
 %endif
 CONFIGURE_TOP="../dist" %configure2_5x \
 	--enable-compat185 --enable-dump185 \
