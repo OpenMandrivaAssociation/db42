@@ -35,7 +35,7 @@
 Summary: The Berkeley DB database library for C
 Name: db42
 Version: 4.2.52
-Release: %mkrel 18
+Release: %mkrel 19
 Source: http://download.oracle.com/berkeley-db/db-%{version}.tar.bz2
 URL: http://www.oracle.com/technology/software/products/berkeley-db/db/
 License: BSD
@@ -47,7 +47,6 @@ BuildRequires: glibc-static-devel
 %endif
 %if %with java
 BuildRequires:  java-rpmbuild
-BuildRequires:  libgcj-devel
 BuildRequires:  sharutils
 %if %{gcj_support}
 BuildRequires: java-gcj-compat-devel
@@ -75,7 +74,7 @@ Patch8: BerkeleyDB42.patch
 Patch10: http://www.oracle.com/technology/products/berkeley-db/db/update/4.2.52/patch.4.2.52.5
 Patch11: http://www.stanford.edu/services/directory/openldap/configuration/patches/db/4252-region-fix.diff
 
-BuildRoot: %{_tmppath}/%{name}-root
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 %description
 The Berkeley Database (Berkeley DB) is a programmatic toolkit that provides
