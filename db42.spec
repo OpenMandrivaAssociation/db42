@@ -35,7 +35,7 @@
 Summary: The Berkeley DB database library for C
 Name: db42
 Version: 4.2.52
-Release: %mkrel 17
+Release: %mkrel 18
 Source: http://download.oracle.com/berkeley-db/db-%{version}.tar.bz2
 URL: http://www.oracle.com/technology/software/products/berkeley-db/db/
 License: BSD
@@ -51,8 +51,6 @@ BuildRequires:  libgcj-devel
 BuildRequires:  sharutils
 %if %{gcj_support}
 BuildRequires: java-gcj-compat-devel
-%else
-BuildRequires: java-devel
 %endif
 %endif
 
@@ -109,13 +107,10 @@ should be installed on all systems.
 This package contains the files needed to build C++ programs which use
 Berkeley DB.
 
+%if %with java
 %package -n %{libdbjava}
 Summary: The Berkeley DB database library for Java
 Group: Development/Java
-%if %{gcj_support}
-Requires(post): java-gcj-compat
-Requires(postun):  java-gcj-compat
-%endif
 
 %description -n %{libdbjava}
 The Berkeley Database (Berkeley DB) is a programmatic toolkit that provides
@@ -132,6 +127,7 @@ Group:          Development/Java
 
 %description -n %{libdbjava}-javadoc
 Javadoc for %{name}.
+%endif
 
 %package -n %{libdbtcl}
 Summary: The Berkeley DB database library for TCL
@@ -454,12 +450,12 @@ rm -rf %{buildroot}
 %dir %{_libdir}/gcj/%{name}
 %{_libdir}/gcj/%{name}/*
 %endif
-%endif
 
 %files -n %{libdbjava}-javadoc
 %defattr(0644,root,root,0755)
 %doc %{_javadocdir}/db%{soversion}-%{version}
 %doc %dir %{_javadocdir}/db%{soversion}
+%endif
 
 %files -n %{libdbtcl}
 %defattr(755,root,root)
