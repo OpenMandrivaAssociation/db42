@@ -31,11 +31,17 @@
 %{?_with_nss: %{expand: %%define build_nss 1}}
 %{?_without_nss: %{expand: %%define build_nss 0}}
 
+# Define to rename utilities and allow parallel installation
+%define build_parallel	1
+
+# Allow --with[out] parallel rpm command line build
+%{?_with_parallel: %{expand: %%define build_parallel 1}}
+%{?_without_parallel: %{expand: %%define build_parallel 0}}
 
 Summary: The Berkeley DB database library for C
 Name: db42
 Version: 4.2.52
-Release: %mkrel 19
+Release: %mkrel 20
 Source: http://download.oracle.com/berkeley-db/db-%{version}.tar.bz2
 URL: http://www.oracle.com/technology/software/products/berkeley-db/db/
 License: BSD
@@ -145,9 +151,10 @@ building tcl programs which use Berkeley DB.
 %package utils
 Summary: Command line tools for managing Berkeley DB databases
 Group: Databases
+%if !%{build_parallel}
 Conflicts: db3-utils
-Provides: db4-utils
-Obsoletes: db4-utils
+%endif
+Provides: db4-utils = %{version}-%{release}
 
 %description utils
 The Berkeley Database (Berkeley DB) is a programmatic toolkit that provides
@@ -356,6 +363,7 @@ popd
 
 %install
 rm -rf %{buildroot}
+
 make -C build_unix install_setup install_include install_lib install_utilities \
 	DESTDIR=%{buildroot} includedir=%{_includedir}/db4 \
 	emode=755
@@ -372,10 +380,12 @@ ln -s  /%{_lib}/libdb_nss-%{soversion}.so %{buildroot}%{_libdir}
 
 ln -sf db4/db.h %{buildroot}%{_includedir}/db.h
 
-# XXX This is needed for parallel install with db4.1
-#for F in %{buildroot}%{_bindir}/*db_* ; do
-#   mv $F `echo $F | sed -e 's,db_,db42_,'`
-#done
+# XXX This is needed for parallel install with db4.1,db4.6
+%if %{build_parallel}
+for F in %{buildroot}%{_bindir}/*db_* ; do
+   mv $F `echo $F | sed -e 's,db_,%{name}_,'`
+done
+%endif
 
 # Move db.jar file to the correct place, and version it
 %if %with java
