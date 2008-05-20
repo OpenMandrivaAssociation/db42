@@ -82,7 +82,8 @@ Patch7: db-4.2.52.4.diff
 # to be disabled for operations that specify it (TXN_NOLOG)
 Patch8: BerkeleyDB42.patch
 
-Patch10: http://www.oracle.com/technology/products/berkeley-db/db/update/4.2.52/patch.4.2.52.5
+#Patch10: http://www.oracle.com/technology/products/berkeley-db/db/update/4.2.52/patch.4.2.52.5
+Patch10: db-4.2.52.5.diff
 Patch11: http://www.stanford.edu/services/directory/openldap/configuration/patches/db/4252-region-fix.diff
 
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
