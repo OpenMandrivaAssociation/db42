@@ -41,7 +41,7 @@
 Summary: The Berkeley DB database library for C
 Name: db42
 Version: 4.2.52
-Release: %mkrel 20
+Release: %mkrel 21
 Source: http://download.oracle.com/berkeley-db/db-%{version}.tar.bz2
 URL: http://www.oracle.com/technology/software/products/berkeley-db/db/
 License: BSD
@@ -60,8 +60,10 @@ BuildRequires: java-gcj-compat-devel
 %endif
 
 #Upstream patches from http://www.oracle.com/technology/products/berkeley-db/db/update/4.2.52/patch.4.2.52.html
-Patch0: http://www.sleepycat.com/update/4.2.52/patch.4.2.52.1
-Patch1: http://www.sleepycat.com/update/4.2.52/patch.4.2.52.2
+#Patch0: http://www.sleepycat.com/update/4.2.52/patch.4.2.52.1
+#Patch1: http://www.sleepycat.com/update/4.2.52/patch.4.2.52.2
+Patch0: db-4.2.52.1.diff
+Patch1: db-4.2.52.2.diff
 
 # Add fast AMD64 mutexes
 Patch2: db-4.2.52-disable-pthreadsmutexes.patch
@@ -71,8 +73,11 @@ Patch4: db-4.2.52-db185.patch
 # Fix broken built-in libtool 1.5
 Patch5: db-4.2.52-libtool-fixes.patch
 
-Patch6:	http://www.sleepycat.com/update/4.2.52/patch.4.2.52.3
-Patch7:	http://www.sleepycat.com/update/4.2.52/patch.4.2.52.4
+#Patch6:	http://www.sleepycat.com/update/4.2.52/patch.4.2.52.3
+#Patch7:	http://www.sleepycat.com/update/4.2.52/patch.4.2.52.4
+Patch6: db-4.2.52.3.diff
+Patch7: db-4.2.52.4.diff
+
 # no transaction patch from OpenLDAP 2.3 CVS pre-2.3.5, allows transactions
 # to be disabled for operations that specify it (TXN_NOLOG)
 Patch8: BerkeleyDB42.patch
@@ -80,7 +85,7 @@ Patch8: BerkeleyDB42.patch
 Patch10: http://www.oracle.com/technology/products/berkeley-db/db/update/4.2.52/patch.4.2.52.5
 Patch11: http://www.stanford.edu/services/directory/openldap/configuration/patches/db/4252-region-fix.diff
 
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
 The Berkeley Database (Berkeley DB) is a programmatic toolkit that provides
