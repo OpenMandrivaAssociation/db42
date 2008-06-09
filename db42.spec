@@ -423,11 +423,19 @@ ln -sf libdb_java-%{soversion}.a %{buildroot}%{_libdir}/libdb_java-4.a
 %clean
 rm -rf %{buildroot}
 
+%if %mdkversion < 200900
 %post -n %{libname} -p /sbin/ldconfig
+%endif
+%if %mdkversion < 200900
 %postun -n %{libname} -p /sbin/ldconfig
+%endif
 
+%if %mdkversion < 200900
 %post -n %{libdbcxx} -p /sbin/ldconfig
+%endif
+%if %mdkversion < 200900
 %postun -n %{libdbcxx} -p /sbin/ldconfig
+%endif
 
 %if %with java
 %post -n %{libdbjava}
@@ -437,12 +445,20 @@ rm -rf %{buildroot}
 %{clean_gcjdb}
 %endif
  
+%if %mdkversion < 200900
 %post -n %{libdbtcl} -p /sbin/ldconfig
+%endif
+%if %mdkversion < 200900
 %postun -n %{libdbtcl} -p /sbin/ldconfig
+%endif
 
 %if %{build_nss}
+%if %mdkversion < 200900
 %post -n %{libdbnss} -p /sbin/ldconfig
+%endif
+%if %mdkversion < 200900
 %postun -n %{libdbnss} -p /sbin/ldconfig
+%endif
 %endif
 
 %files -n %{libname}
