@@ -250,7 +250,7 @@ modules which use Berkeley DB.
 
 %prep
 %setup -q -n db-%{version}
-%{__rm} -r docs/java
+%{__rm} -rf docs/java
 
 #upstream patches
 %patch0
