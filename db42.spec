@@ -323,6 +323,10 @@ CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT"
 %endif
 export CFLAGS
 
+. %{_libdir}/tclConfig.sh
+export LIBTSO_LIBS="$TCL_LIB_SPEC"
+export TCFLAGS="$TCL_INCLUDE_SPEC"
+
 %if %{mdkversion} < 1010
 %define __libtoolize /bin/true
 %endif
