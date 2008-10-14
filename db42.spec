@@ -41,7 +41,7 @@
 Summary: The Berkeley DB database library for C
 Name: db42
 Version: 4.2.52
-Release: %mkrel 24
+Release: %mkrel 25
 Source: http://download.oracle.com/berkeley-db/db-%{version}.tar.bz2
 URL: http://www.oracle.com/technology/software/products/berkeley-db/db/
 License: BSD
@@ -185,6 +185,7 @@ Conflicts: %{libname_orig}4.1-devel
 # for some reason packages links against libdb4.3, unless we have this conflict.
 Conflicts: %{libname_orig}4.3
 Conflicts: %{libname_orig}4.6-devel
+Conflicts: %{libname_orig}4.7-devel
 
 %description -n %{libnamedev}
 The Berkeley Database (Berkeley DB) is a programmatic toolkit that provides
@@ -207,6 +208,7 @@ Conflicts: %{libname_orig}4.0-static-devel
 Conflicts: %{libname_orig}4.1-static-devel
 Conflicts: %{libname_orig}4.3-static-devel
 Conflicts: %{libname_orig}4.6-static-devel
+Conflicts: %{libname_orig}4.7-static-devel
 
 %description -n %{libnamestatic}
 The Berkeley Database (Berkeley DB) is a programmatic toolkit that provides
@@ -242,6 +244,7 @@ Provides: %{_lib}dbnss-devel = %{version}-%{release}
 Provides: db_nss-devel = %{version}-%{release}
 Provides: libdb_nss-devel = %{version}-%{release}
 Conflicts: %{libname_orig}nss4.6-devel
+Conflicts: %{libname_orig}nss4.7-devel
 
 %description -n %{libdbnssdev}
 The Berkeley Database (Berkeley DB) is a programmatic toolkit that provides
