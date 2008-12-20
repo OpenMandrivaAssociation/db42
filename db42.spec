@@ -47,7 +47,7 @@ URL: http://www.oracle.com/technology/software/products/berkeley-db/db/
 License: BSD
 Group: System/Libraries
 BuildRequires: tcl, db1-devel,ed
-BuildRequires: libtcl-devel
+BuildRequires: tcl-devel
 %if %{mdkversion} >= 900
 BuildRequires: glibc-static-devel	
 %endif
