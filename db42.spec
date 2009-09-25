@@ -21,8 +21,17 @@
 %{?!mdkversion: %define mdkversion %(perl -pe '/(\d+)\.(\d)\.?(\d)?/; $_="$1$2".($3||0)' /etc/mandriva-release)}
 %{?!mkrel:%define mkrel(c:) %{-c:0.%{-c*}.}%{!?_with_unstable:%(perl -e '$_="%{1}";m/(.\*\\D\+)?(\\d+)$/;$rel=${2}-1;re;print "$1$rel";').%{?subrel:%subrel}%{!?subrel:1}.%{?distversion:%distversion}%{?!distversion:%(echo $[%{mdkversion}/10])}}%{?_with_unstable:%{1}}%{?distsuffix:%distsuffix}%{?!distsuffix:mdk}}
 
+%ifnarch %mips 
 %bcond_without java
 %define gcj_support 1
+%endif
+
+# Define to build tcl bindings
+%define build_tcl      1
+
+# Allow --with[out] tcl rpm command line build
+%{?_with_tcl: %global build_tcl 1}
+%{?_without_tcl: %global build_tcl 0}
 
 # Define to build a stripped down version to use for nss libraries
 %define build_nss	1
@@ -46,8 +55,10 @@ Source0: http://download.oracle.com/berkeley-db/db-%{version}.tar.bz2
 URL: http://www.oracle.com/technology/software/products/berkeley-db/db/
 License: BSD
 Group: System/Libraries
-BuildRequires: tcl, db1-devel,ed
-BuildRequires: tcl-devel
+BuildRequires: db1-devel,ed
+%if %{build_tcl}
+BuildRequires: tcl, tcl-devel
+%endif
 %if %{mdkversion} >= 900
 BuildRequires: glibc-static-devel	
 %endif
@@ -85,6 +96,8 @@ Patch8: BerkeleyDB42.patch
 #Patch10: http://www.oracle.com/technology/products/berkeley-db/db/update/4.2.52/patch.4.2.52.5
 Patch10: db-4.2.52.5.diff
 Patch11: http://www.stanford.edu/services/directory/openldap/configuration/patches/db/4252-region-fix.diff
+
+Patch12: db4.2-mips-mutex.patch
 
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
@@ -140,6 +153,7 @@ Group:          Development/Java
 Javadoc for %{name}.
 %endif
 
+%if %{build_tcl}
 %package -n %{libdbtcl}
 Summary: The Berkeley DB database library for TCL
 Group: System/Libraries
@@ -153,6 +167,7 @@ should be installed on all systems.
 
 This package contains the header files, libraries, and documentation for
 building tcl programs which use Berkeley DB.
+%endif
 
 %package utils
 Summary: Command line tools for managing Berkeley DB databases
@@ -175,7 +190,9 @@ This package contains command line tools for managing Berkeley DB databases.
 Summary: Development libraries/header files for the Berkeley DB library
 Group: Development/Databases
 Requires: %{libname} = %{version}-%{release}
+%if %{build_tcl}
 Requires: %{libdbtcl} = %{version}-%{release}
+%endif
 Requires: %{libdbcxx} = %{version}-%{release}
 Provides: db4.2-devel = %{version}-%{release}
 Provides: libdb4.2-devel = %{version}-%{release}
@@ -277,6 +294,8 @@ modules which use Berkeley DB.
 %patch10
 %patch11 -p1
 
+%patch12 -p1 -b .mips
+
 # Remove tags files which we don't need.
 find . -name tags | xargs rm -f
 # Define a shell function for fixing HREF references in the docs, which
@@ -346,20 +365,24 @@ JAVA_MAKE="JAR=%{jar} JAVAC=%{javac} JAVACFLAGS="-nowarn" JAVA=%{java}"
 CONFIGURE_TOP="../dist" %configure2_5x \
 	--enable-compat185 --enable-dump185 \
 	--enable-shared --enable-static --enable-rpc \
+%if %{build_tcl}
 	--enable-tcl --with-tcl=%{_libdir} \
+	--enable-test  \
+%endif
 	--enable-cxx \
 %if %with java
 	--enable-java \
 %endif
-	--enable-test  \
 	--disable-pthreadsmutexes \
 	# --enable-diagnostic \
 	# --enable-debug --enable-debug_rop --enable-debug_wop \
 
 %make $JAVA_MAKE
+%if %with java
 pushd ../java
 %{javadoc} -d ../docs/java `%{_bindir}/find . -name '*.java'`
 popd
+%endif
 popd
 %if %{build_nss}
 mkdir build_nss
@@ -424,10 +447,12 @@ mv %{buildroot}%{_libdir}/db.jar %{buildroot}%{_jnidir}/db%{soversion}-%{version
 #symlink the short libdb???.a name
 ln -sf %{_libdb_a} %{buildroot}%{_libdir}/libdb.a
 ln -sf %{_libcxx_a} %{buildroot}%{_libdir}/libdb_cxx.a
+%if %{build_tcl}
 ln -sf libdb_tcl-%{soversion}.a %{buildroot}%{_libdir}/libdb_tcl.a
+ln -sf libdb_tcl-%{soversion}.a %{buildroot}%{_libdir}/libdb_tcl-4.a
+%endif
 ln -sf %{_libdb_a} %{buildroot}%{_libdir}/libdb-4.a
 ln -sf %{_libcxx_a} %{buildroot}%{_libdir}/libdb_cxx-4.a
-ln -sf libdb_tcl-%{soversion}.a %{buildroot}%{_libdir}/libdb_tcl-4.a
 %if %with java
 ln -sf libdb_java-%{soversion}.a %{buildroot}%{_libdir}/libdb_java.a
 ln -sf libdb_java-%{soversion}.a %{buildroot}%{_libdir}/libdb_java-4.a
@@ -458,11 +483,13 @@ rm -rf %{buildroot}
 %{clean_gcjdb}
 %endif
  
+%if %{build_tcl} 
 %if %mdkversion < 200900
 %post -n %{libdbtcl} -p /sbin/ldconfig
 %endif
 %if %mdkversion < 200900
 %postun -n %{libdbtcl} -p /sbin/ldconfig
+%endif
 %endif
 
 %if %{build_nss}
@@ -501,9 +528,11 @@ rm -rf %{buildroot}
 %doc %dir %{_javadocdir}/db%{soversion}
 %endif
 
+%if %{build_tcl}
 %files -n %{libdbtcl}
 %defattr(755,root,root)
 %{_libdir}/libdb_tcl-%{soversion}.so
+%endif
 
 %files utils
 %defattr(644,root,root,755)
@@ -524,7 +553,10 @@ rm -rf %{buildroot}
 
 %files -n %{libnamedev}
 %defattr(644,root,root,755)
-%doc docs/api_c docs/api_cxx docs/java docs/api_tcl docs/index.html
+%if %with java
+%doc docs/java
+%endif
+%doc docs/api_c docs/api_cxx docs/api_tcl docs/index.html
 %doc docs/ref docs/sleepycat docs/images
 %doc examples_c examples_cxx
 %dir %{_includedir}/db4
@@ -538,9 +570,11 @@ rm -rf %{buildroot}
 %{_libdir}/libdb_cxx.so
 %{_libdir}/libdb_cxx-4.so
 %{_libdir}/libdb_cxx-%{soversion}.la
+%if %{build_tcl}
 %{_libdir}/libdb_tcl.so
 %{_libdir}/libdb_tcl-4.so
 %{_libdir}/libdb_tcl-%{soversion}.la
+%endif
 %if %with java
 %{_libdir}/libdb_java.so
 %{_libdir}/libdb_java-4.so
