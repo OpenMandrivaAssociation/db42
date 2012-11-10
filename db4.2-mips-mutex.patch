@@ -1,0 +1,98 @@
+Index: db-4.2.52/dbinc/mutex.h
+===================================================================
+--- db-4.2.52.orig/dbinc/mutex.h	2007-07-28 18:12:36.000000000 +0000
++++ db-4.2.52/dbinc/mutex.h	2007-07-28 18:17:09.000000000 +0000
+@@ -527,6 +527,46 @@
+ #endif
+ 
+ /*********************************************************************
++ * MIPS/gcc assembly.
++ *********************************************************************/
++#ifdef HAVE_MUTEX_MIPS_GCC_ASSEMBLY
++typedef u_int32_t tsl_t;
++
++#ifndef        MUTEX_ALIGN
++#define        MUTEX_ALIGN     4
++#endif
++
++#ifdef LOAD_ACTUAL_MUTEX_CODE
++/*
++ * For gcc/mips.  Should return 0 if could not acquire the lock, 1 if
++ * lock was acquired properly.
++ */
++static inline int
++MUTEX_SET(tsl_t *tsl) {
++       register tsl_t *__l = tsl;
++       register tsl_t __r;
++       __asm__ __volatile__(
++               "       .set push       \n"
++               "       .set mips2      \n"
++               "       .set noreorder  \n"
++               "       .set nomacro    \n"
++               "1:     ll      %0, %1          \n"
++               "       bne     %0, $0, 1f      \n"
++               "        xori   %0, %0, 1       \n"
++               "       sc      %0, %1          \n"
++               "       beql    %0, $0, 1b      \n"
++               "        xori   %0, 1           \n"
++               "1:     .set pop                  "
++               : "=&r" (__r), "+R" (*__l));
++       return __r;
++}
++
++#define        MUTEX_UNSET(tsl)        (*(volatile tsl_t *)(tsl) = 0)
++#define        MUTEX_INIT(tsl)         MUTEX_UNSET(tsl)
++#endif
++#endif
++
++/*********************************************************************
+  * HPPA/gcc assembly.
+  *********************************************************************/
+ #ifdef HAVE_MUTEX_HPPA_GCC_ASSEMBLY
+Index: db-4.2.52/dist/config.hin
+===================================================================
+--- db-4.2.52.orig/dist/config.hin	2003-12-03 21:10:00.000000000 +0000
++++ db-4.2.52/dist/config.hin	2007-07-28 18:17:09.000000000 +0000
+@@ -122,6 +122,9 @@
+ /* Define to 1 to use the GCC compiler and IA64 assembly language mutexes. */
+ #undef HAVE_MUTEX_IA64_GCC_ASSEMBLY
+ 
++/* Define to 1 to use the GCC compiler and MIPS assembly language mutexes. */
++#undef HAVE_MUTEX_MIPS_GCC_ASSEMBLY
++
+ /* Define to 1 to use the msem_XXX mutexes on systems other than HP-UX. */
+ #undef HAVE_MUTEX_MSEM_INIT
+ 
+Index: db-4.2.52/dist/aclocal/mutex.ac
+===================================================================
+--- db-4.2.52.orig/dist/aclocal/mutex.ac	2007-07-28 18:12:36.000000000 +0000
++++ db-4.2.52/dist/aclocal/mutex.ac	2007-07-28 18:17:09.000000000 +0000
+@@ -376,6 +376,17 @@
+ ], [db_cv_mutex="ARM/gcc-assembly"])
+ fi
+ 
++# MIPS/gcc: Linux
++if test "$db_cv_mutex" = no; then
++AC_TRY_COMPILE(,[
++#if (defined(__mips) || defined(__mips__)) && defined(__GNUC__)
++       exit(0);
++#else
++       FAIL TO COMPILE/LINK
++#endif
++], [db_cv_mutex="MIPS/gcc-assembly"])
++fi
++
+ # PaRisc/gcc: HP/UX
+ if test "$db_cv_mutex" = no; then
+ AC_TRY_COMPILE(,[
+@@ -513,6 +524,10 @@
+ 			AC_DEFINE(HAVE_MUTEX_ARM_GCC_ASSEMBLY)
+ 			AH_TEMPLATE(HAVE_MUTEX_ARM_GCC_ASSEMBLY,
+ 			    [Define to 1 to use the GCC compiler and ARM assembly language mutexes.]);;
++MIPS/gcc-assembly)	ADDITIONAL_OBJS="mut_tas${o} $ADDITIONAL_OBJS"
++			AC_DEFINE(HAVE_MUTEX_MIPS_GCC_ASSEMBLY)
++			AH_TEMPLATE(HAVE_MUTEX_MIPS_GCC_ASSEMBLY,
++			    [Define to 1 to use the GCC compiler and MIPS assembly language mutexes.]);;
+ HP/msem_init)		ADDITIONAL_OBJS="mut_tas${o} $ADDITIONAL_OBJS"
+ 			AC_DEFINE(HAVE_MUTEX_HPPA_MSEM_INIT)
+ 			AH_TEMPLATE(HAVE_MUTEX_HPPA_MSEM_INIT,

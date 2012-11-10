@@ -1,0 +1,13 @@
+--- db-4.2.52/dist/Makefile.in.db185	2003-11-28 19:50:06.000000000 +0100
++++ db-4.2.52/dist/Makefile.in	2004-07-26 18:42:42.880381588 +0200
+@@ -143,8 +143,8 @@
+ # local libraries, for example.  Do that by adding -I options to the DB185INC
+ # line, and -l options to the DB185LIB line.
+ ##################################################
+-DB185INC=	-c @CFLAGS@ -I$(srcdir) @CPPFLAGS@
+-DB185LIB=
++DB185INC=	-c @CFLAGS@ -I/usr/include/db1 -I$(srcdir) @CPPFLAGS@
++DB185LIB=	-Wl,-static,-ldb1,-Bdynamic
+ 
+ ##################################################
+ # NOTHING BELOW THIS LINE SHOULD EVER NEED TO BE MODIFIED.

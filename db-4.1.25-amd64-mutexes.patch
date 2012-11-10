@@ -1,0 +1,65 @@
+--- db-4.1.25/dbinc/mutex.h.amd64-mutexes	2002-12-19 17:39:08.000000000 +0100
++++ db-4.1.25/dbinc/mutex.h	2003-07-30 15:42:14.000000000 +0200
+@@ -690,6 +690,31 @@ typedef unsigned char tsl_t;
+ #endif
+ #endif
+ 
++/*********************************************************************
++ * amd64/gcc assembly.
++ *********************************************************************/
++#ifdef HAVE_MUTEX_X86_64_GCC_ASSEMBLY
++typedef unsigned char tsl_t;
++
++#ifdef LOAD_ACTUAL_MUTEX_CODE
++/*
++ * For gcc/amd64, 0 is clear, 1 is set.
++ */
++#define  MUTEX_SET(tsl) ({           \
++	register tsl_t *__l = (tsl);          \
++	int __r;              \
++	asm volatile("mov $1,%%rax; lock; xchgb %1,%%al; xor $1,%%rax"\
++		: "=&a" (__r), "=m" (*__l)          \
++		: "1" (*__l)            \
++		);                \
++	__r & 1;              \
++})
++
++#define  MUTEX_UNSET(tsl)  (*(tsl) = 0)
++#define  MUTEX_INIT(tsl)   MUTEX_UNSET(tsl)
++#endif
++#endif
++
+ /*
+  * Mutex alignment defaults to one byte.
+  *
+--- db-4.1.25/dist/aclocal/mutex.ac.amd64-mutexes	2002-07-31 21:19:20.000000000 +0200
++++ db-4.1.25/dist/aclocal/mutex.ac	2003-07-30 15:45:39.000000000 +0200
+@@ -425,6 +425,17 @@ AC_TRY_COMPILE(,[
+ ], [db_cv_mutex="S390/gcc-assembly"])
+ fi
+ 
++# AMD64/gcc: FreeBSD, NetBSD, BSD/OS, Linux
++if test "$db_cv_mutex" = no; then
++AC_TRY_COMPILE(,[
++#if (defined(x86_64) || defined(__x86_64__)) && defined(__GNUC__)
++	exit(0);
++#else
++	FAIL TO COMPILE/LINK
++#endif
++], [db_cv_mutex="x86_64/gcc-assembly"])
++fi
++
+ # ia86/gcc: Linux
+ if test "$db_cv_mutex" = no; then
+ AC_TRY_COMPILE(,[
+@@ -570,6 +580,10 @@ x86/gcc-assembly)	ADDITIONAL_OBJS="mut_t
+ 			AC_DEFINE(HAVE_MUTEX_X86_GCC_ASSEMBLY)
+ 			AH_TEMPLATE(HAVE_MUTEX_X86_GCC_ASSEMBLY,
+ 			    [Define to 1 to use the GCC compiler and x86 assembly language mutexes.]);;
++x86_64/gcc-assembly)	ADDITIONAL_OBJS="mut_tas${o} $ADDITIONAL_OBJS"
++			AC_DEFINE(HAVE_MUTEX_X86_64_GCC_ASSEMBLY)
++			AH_TEMPLATE(HAVE_MUTEX_X86_64_GCC_ASSEMBLY,
++			    [Define to 1 to use the GCC compiler and amd64 assembly language mutexes.]);;
+ UNIX/fcntl)		AC_MSG_WARN(
+ 			    [NO FAST MUTEXES FOUND FOR THIS COMPILER/ARCHITECTURE.])
+ 			ADDITIONAL_OBJS="mut_fcntl${o} $ADDITIONAL_OBJS"

@@ -1,0 +1,75 @@
+--- db-4.2.52/dist/aclocal/options.ac.orig	2003-11-17 21:58:48.000000000 +0200
++++ db-4.2.52/dist/aclocal/options.ac	2004-05-04 01:58:26.420494088 +0300
+@@ -137,6 +137,16 @@
+ 	[db_cv_mingw="$enable_mingw"], [db_cv_mingw="no"])
+ AC_MSG_RESULT($db_cv_mingw)
+ 
++AC_MSG_CHECKING(if --disable-pthreadsmutexes option specified)
++AC_ARG_ENABLE(pthreadsmutexes,
++	AC_HELP_STRING([--disable-pthreadsmutexes],
++	    [Do not use POSIX pthreads mutexes.]),, enableval="yes")
++db_cv_pthreadsmutexes="$enableval"
++case "$enableval" in
++ no) AC_MSG_RESULT(yes);;
++yes) AC_MSG_RESULT(no);;
++esac
++
+ AC_MSG_CHECKING(if --enable-posixmutexes option specified)
+ AC_ARG_ENABLE(posixmutexes,
+ 	[AC_HELP_STRING([--enable-posixmutexes],
+--- db-4.2.52/dist/aclocal/mutex.ac.orig	2003-06-16 17:54:39.000000000 +0300
++++ db-4.2.52/dist/aclocal/mutex.ac	2004-05-04 02:07:52.189484128 +0300
+@@ -198,28 +198,31 @@
+ # Try with and without the -lpthread library.  If the user specified we use
+ # POSIX pthreads mutexes, and we fail to find the full interface, try and
+ # configure for just intra-process support.
+-if test "$db_cv_mutex" = no -o "$db_cv_mutex" = "posix_only"; then
+-	AM_PTHREADS_SHARED("POSIX/pthreads")
+-fi
+-if test "$db_cv_mutex" = no -o \
+-    "$db_cv_mutex" = "posix_only" -o "$db_cv_mutex" = "posix_library_only"; then
+-	LIBS="$LIBS -lpthread"
+-	AM_PTHREADS_SHARED("POSIX/pthreads/library")
+-	LIBS="$orig_libs"
+-fi
+-if test "$db_cv_mutex" = "posix_only"; then
+-	AM_PTHREADS_PRIVATE("POSIX/pthreads/private")
+-fi
+-if test "$db_cv_mutex" = "posix_only" -o \
+-    "$db_cv_mutex" = "posix_library_only"; then
+-	LIBS="$LIBS -lpthread"
+-	AM_PTHREADS_PRIVATE("POSIX/pthreads/library/private")
+-	LIBS="$orig_libs"
+-fi
+-
+-if test "$db_cv_mutex" = "posix_only" -o \
+-    "$db_cv_mutex" = "posix_library_only"; then
+-	AC_MSG_ERROR([unable to find POSIX 1003.1 mutex interfaces])
++if test "$db_cv_pthreadsmutexes" = yes; then
++	if test "$db_cv_mutex" = no -o "$db_cv_mutex" = "posix_only"; then
++		AM_PTHREADS_SHARED("POSIX/pthreads")
++	fi
++	if test "$db_cv_mutex" = no -o \
++	    "$db_cv_mutex" = "posix_only" -o \
++	    "$db_cv_mutex" = "posix_library_only"; then
++		LIBS="$LIBS -lpthread"
++		AM_PTHREADS_SHARED("POSIX/pthreads/library")
++		LIBS="$orig_libs"
++	fi
++	if test "$db_cv_mutex" = "posix_only"; then
++		AM_PTHREADS_PRIVATE("POSIX/pthreads/private")
++	fi
++	if test "$db_cv_mutex" = "posix_only" -o \
++	    "$db_cv_mutex" = "posix_library_only"; then
++		LIBS="$LIBS -lpthread"
++		AM_PTHREADS_PRIVATE("POSIX/pthreads/library/private")
++		LIBS="$orig_libs"
++	fi
++
++	if test "$db_cv_mutex" = "posix_only" -o \
++	    "$db_cv_mutex" = "posix_library_only"; then
++		AC_MSG_ERROR([unable to find POSIX 1003.1 mutex interfaces])
++	fi
+ fi
+ 
+ # msemaphore: HPPA only
