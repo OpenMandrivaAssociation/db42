@@ -52,7 +52,7 @@ Name: db42
 Version: 4.2.52
 Release: %mkrel 30
 Source0: http://download.oracle.com/berkeley-db/db-%{version}.tar.bz2
-URL: http://www.oracle.com/technology/software/products/berkeley-db/db/
+URL: https://www.oracle.com/technology/software/products/berkeley-db/db/
 License: BSD
 Group: System/Libraries
 BuildRequires: db1-devel,ed
